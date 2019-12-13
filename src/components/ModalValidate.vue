@@ -1,20 +1,17 @@
 <template>
-  <modal title="Modal with form + Validate" @close="$emit('close')">
+  <modal title="Modal with form + Validate" @close="resetForm()">
     <div slot="body">
       <form @submit.prevent="onSubmit">
         <!-- name -->
         <div class="form-item" :class="{ errorInput: $v.name.$error }">
           <label>Name</label>
           <p class="errorText" v-if="!$v.name.required">Field is required!</p>
-          <p class="errorText" v-if="!$v.name.minLength">
-            Name must have at least {{ $v.name.$params.minLength.min }}!
-          </p>
+          <p
+            class="errorText"
+            v-if="!$v.name.minLength"
+          >Name must have at least {{ $v.name.$params.minLength.min }}!</p>
 
-          <input
-            v-model="name"
-            :class="{ error: $v.name.$error }"
-            @change="$v.name.$touch()"
-          />
+          <input v-model="name" :class="{ error: $v.name.$error }" @change="$v.name.$touch()" />
         </div>
 
         <!-- email -->
@@ -22,10 +19,36 @@
           <label>Email</label>
           <p class="errorText" v-if="!$v.email.required">Field is required!</p>
           <p class="errorText" v-if="!$v.email.email">Email is not correct!</p>
+          <input v-model="email" :class="{ error: $v.email.$error }" @change="$v.email.$touch()" />
+        </div>
+
+        <!-- passowrd -->
+        <div class="form-item" :class="{ errorInput: $v.password.$error }">
+          <label>Password</label>
+          <p class="errorText" v-if="!$v.password.required">Field is required!</p>
+          <p
+            class="errorText"
+            v-if="!$v.password.minLength"
+          >Name must have at least {{ $v.password.$params.minLength.min }}!</p>
+
           <input
-            v-model="email"
-            :class="{ error: $v.email.$error }"
-            @change="$v.email.$touch()"
+            type="password"
+            v-model="password"
+            :class="{ error: $v.password.$error }"
+            @change="$v.password.$touch()"
+          />
+        </div>
+
+        <!-- repeat passowrd -->
+        <div class="form-item" :class="{ errorInput: $v.repeatPassword.$error }">
+          <label>Repeat password</label>
+          <p class="errorText" v-if="!$v.repeatPassword.sameAsPassword">Passwords must be identical.</p>
+
+          <input
+            type="password"
+            v-model="repeatPassword"
+            :class="{ error: $v.repeatPassword.$error }"
+            @change="$v.repeatPassword.$touch()"
           />
         </div>
 
@@ -37,7 +60,7 @@
 </template>
 
 <script>
-import { required, minLength, email } from "vuelidate/lib/validators";
+import { required, minLength, email, sameAs } from "vuelidate/lib/validators";
 import modal from "./Modal";
 
 export default {
@@ -47,7 +70,9 @@ export default {
   data() {
     return {
       name: "",
-      email: ""
+      email: "",
+      password: "",
+      repeatPassword: ""
     };
   },
   validations: {
@@ -58,6 +83,13 @@ export default {
     email: {
       required,
       email
+    },
+    password: {
+      required,
+      minLength: minLength(4)
+    },
+    repeatPassword: {
+      sameAsPassword: sameAs("password")
     }
   },
   methods: {
@@ -67,17 +99,23 @@ export default {
       if (!this.$v.$invalid) {
         const user = {
           name: this.name,
-          email: this.email
+          email: this.email,
+          password: this.password
         };
 
         console.log(user);
 
         //DONE!
-        this.name = "";
-        this.email = "";
-        this.$v.$reset();
-        this.$emit("close");
+        this.resetForm();
       }
+    },
+    resetForm() {
+      this.name = "";
+      this.email = "";
+      this.password = "";
+      this.repeatPassword = "";
+      this.$v.$reset();
+      this.$emit("close");
     }
   }
 };
