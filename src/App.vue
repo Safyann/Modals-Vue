@@ -4,19 +4,11 @@
       <section>
         <div class="container">
           <!-- first modal -->
-          <button class="btn btnPrimary" @click="modalFirst = !modalFirst">
-            Show first modal
-          </button>
-          <modals
-            title="First modal"
-            v-show="modalFirst"
-            @close="modalFirst = false"
-          >
+          <button class="btn btnPrimary" @click="modalFirst = !modalFirst">Show first modal</button>
+          <modals title="First modal" v-show="modalFirst" @close="modalFirst = false">
             <div slot="body">
               <p>Text Text Text Text Text Text Text</p>
-              <button class="btn btnPrimary" @click="modalFirst = false">
-                Ok!
-              </button>
+              <button class="btn btnPrimary" @click="modalFirst = false">Ok!</button>
             </div>
           </modals>
 
@@ -24,14 +16,8 @@
           <button
             class="btn btnPrimary"
             @click="modalSecond.show = !modalSecond.show"
-          >
-            Show modal with form
-          </button>
-          <modals
-            title="Modal with form"
-            v-show="modalSecond.show"
-            @close="closeModalSecont"
-          >
+          >Show modal with form</button>
+          <modals title="Modal with form" v-show="modalSecond.show" @close="closeModalSecont">
             <div slot="body">
               <form @submit.prevent="submitSecondForm">
                 <label>Name</label>
@@ -49,13 +35,16 @@
           <button
             class="btn btnPrimary"
             @click="modalValidate = !modalValidate"
-          >
-            Show modal with validate
-          </button>
-          <ModalValidate
-            v-show="modalValidate"
-            @close="modalValidate = false"
-          />
+          >Show modal with validate</button>
+          <ModalValidate v-show="modalValidate" @close="modalValidate = false" />
+
+          <!-- Authorization -->
+          <button class="btn btnPrimary" @click="login = !login">Log In</button>
+          <Authorization v-show="login" @close="login = false" @change="changeModal" />
+
+          <!-- Registration -->
+          <button class="btn btnPrimary" @click="register = !register">Register</button>
+          <Registration v-show="register" @close="register = false" @change="changeModal" />
         </div>
       </section>
     </div>
@@ -65,10 +54,15 @@
 <script>
 import modals from "./components/Modal";
 import ModalValidate from "./components/ModalValidate";
+import Authorization from "./components/Authorization";
+import Registration from "./components/Registration";
+
 export default {
   components: {
     modals,
-    ModalValidate
+    ModalValidate,
+    Authorization,
+    Registration
   },
   data() {
     return {
@@ -78,7 +72,9 @@ export default {
         email: "",
         show: false
       },
-      modalValidate: false
+      modalValidate: false,
+      login: false,
+      register: false
     };
   },
   methods: {
@@ -94,6 +90,10 @@ export default {
       this.modalSecond.name = "";
       this.modalSecond.email = "";
       this.modalSecond.show = false;
+    },
+    changeModal() {
+      this.login = !this.login;
+      this.register = !this.register;
     }
   }
 };
